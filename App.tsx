@@ -3,8 +3,12 @@ import { getMarkets, getProductsByPillar, PILLARS } from './services/dataService
 import { MarketData, PillarConfig } from './types';
 import { PillarRow } from './components/PillarRow';
 import { PillarDetail } from './components/PillarDetail';
+import { HeatmapView } from './components/HeatmapView';
+import { ComparisonView } from './components/ComparisonView';
 import { FmcFullLogo, FmcIcon } from './components/FmcLogo';
-import { Search, ChevronDown, BarChart3, LayoutGrid, X } from 'lucide-react';
+import { Search, ChevronDown, BarChart3, LayoutGrid, ArrowLeftRight } from 'lucide-react';
+
+type ViewMode = 'landing' | 'dashboard' | 'comparison' | 'heatmap';
 
 const App: React.FC = () => {
   const [markets, setMarkets] = useState<MarketData[]>([]);
@@ -13,13 +17,13 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>('landing');
 
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       const data = await getMarkets();
       setMarkets(data);
-      // Removed default selection to show landing page first
       setIsLoading(false);
     };
     loadData();
@@ -39,11 +43,13 @@ const App: React.FC = () => {
     setSelectedMarketId(id);
     setIsDropdownOpen(false);
     setSearchTerm('');
+    setViewMode('dashboard');
   };
 
   const clearSelection = () => {
     setSelectedMarketId('');
     setSelectedPillar(null);
+    setViewMode('landing');
   }
 
   // --- Render: Loading State ---
@@ -55,14 +61,79 @@ const App: React.FC = () => {
     );
   }
 
-  // --- Render: Landing Page (No Market Selected) ---
-  if (!currentMarket) {
+  // --- Render: Special Views (Heatmap & Comparison) ---
+  if (viewMode === 'heatmap') {
+    return (
+        <div className="min-h-screen bg-[#F4F6F8]">
+             {/* Simple Header for Sub-views */}
+            <header className="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm h-20 flex items-center px-6">
+                <div 
+                    onClick={clearSelection} 
+                    className="cursor-pointer flex items-center gap-3 group"
+                >
+                    <div className="w-10 h-10 flex items-center justify-center transition-transform group-hover:scale-105">
+                        <FmcIcon className="w-full h-full" />
+                    </div>
+                    <span className="font-bold text-xl text-fmc-dark">Strategy Tool</span>
+                </div>
+            </header>
+            <HeatmapView 
+                markets={markets} 
+                pillars={PILLARS} 
+                onBack={() => setViewMode(selectedMarketId ? 'dashboard' : 'landing')}
+                onMarketSelect={handleMarketSelect}
+            />
+        </div>
+    )
+  }
+
+  if (viewMode === 'comparison') {
+    return (
+        <div className="min-h-screen bg-[#F4F6F8]">
+            <header className="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm h-20 flex items-center px-6">
+                <div 
+                    onClick={clearSelection} 
+                    className="cursor-pointer flex items-center gap-3 group"
+                >
+                    <div className="w-10 h-10 flex items-center justify-center transition-transform group-hover:scale-105">
+                        <FmcIcon className="w-full h-full" />
+                    </div>
+                    <span className="font-bold text-xl text-fmc-dark">Strategy Tool</span>
+                </div>
+            </header>
+            <ComparisonView 
+                markets={markets} 
+                pillars={PILLARS} 
+                initialMarketId={selectedMarketId}
+                onBack={() => setViewMode(selectedMarketId ? 'dashboard' : 'landing')}
+            />
+        </div>
+    )
+  }
+
+  // --- Render: Landing Page (No Market Selected & Standard Mode) ---
+  if (viewMode === 'landing' || (!currentMarket && viewMode === 'dashboard')) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-fmc-neutral font-sans text-fmc-dark p-6 relative overflow-hidden">
          {/* Background Decoration */}
          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-fmc-dark via-fmc-medium to-fmc-accent"></div>
          <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-50 rounded-full blur-3xl opacity-50"></div>
          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-50 rounded-full blur-3xl opacity-50"></div>
+
+         <div className="absolute top-6 right-6 flex gap-3 z-20">
+            <button 
+                onClick={() => setViewMode('comparison')}
+                className="flex items-center gap-2 bg-white/80 backdrop-blur px-4 py-2 rounded-full shadow-sm text-sm font-bold text-fmc-dark hover:bg-white transition-all"
+            >
+                <ArrowLeftRight size={16} /> Comparison
+            </button>
+            <button 
+                onClick={() => setViewMode('heatmap')}
+                className="flex items-center gap-2 bg-white/80 backdrop-blur px-4 py-2 rounded-full shadow-sm text-sm font-bold text-fmc-dark hover:bg-white transition-all"
+            >
+                <LayoutGrid size={16} /> Heatmap
+            </button>
+         </div>
 
          <div className="z-10 w-full max-w-lg text-center animate-in zoom-in-95 duration-500">
             <div className="mb-12 flex justify-center">
@@ -164,11 +235,11 @@ const App: React.FC = () => {
                     className="flex items-center gap-3 bg-gray-50 hover:bg-gray-100 px-4 py-2 rounded-lg transition-colors border border-gray-200"
                 >
                     <img 
-                        src={`https://flagcdn.com/w40/${currentMarket.id}.png`} 
+                        src={`https://flagcdn.com/w40/${currentMarket!.id}.png`} 
                         alt="Flag" 
                         className="w-6 h-4 object-cover rounded shadow-sm"
                     />
-                    <span className="font-bold text-fmc-dark">{currentMarket.country}</span>
+                    <span className="font-bold text-fmc-dark">{currentMarket!.country}</span>
                     <ChevronDown size={14} className="text-gray-400" />
                 </button>
                 
@@ -194,13 +265,23 @@ const App: React.FC = () => {
           <div className="flex items-center gap-3">
              {/* Mobile Market Name if Compact Selector Hidden */}
              <div className="md:hidden font-bold text-fmc-dark flex items-center gap-2">
-                <img src={`https://flagcdn.com/w40/${currentMarket.id}.png`} className="w-6 h-4 object-cover rounded" />
-                {currentMarket.country}
+                <img src={`https://flagcdn.com/w40/${currentMarket!.id}.png`} className="w-6 h-4 object-cover rounded" />
+                {currentMarket!.country}
              </div>
 
              <div className="hidden md:flex items-center gap-4">
-                <button className="text-sm font-medium text-gray-500 hover:text-fmc-medium transition-colors">Comparison</button>
-                <button className="text-sm font-medium text-gray-500 hover:text-fmc-medium transition-colors">Heatmap</button>
+                <button 
+                    onClick={() => setViewMode('comparison')}
+                    className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-fmc-medium transition-colors"
+                >
+                    <ArrowLeftRight size={16} /> Comparison
+                </button>
+                <button 
+                    onClick={() => setViewMode('heatmap')}
+                    className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-fmc-medium transition-colors"
+                >
+                    <LayoutGrid size={16} /> Heatmap
+                </button>
              </div>
           </div>
         </div>
@@ -222,15 +303,15 @@ const App: React.FC = () => {
             <div className="flex items-center gap-6 bg-white px-4 py-3 rounded-lg border border-gray-200 shadow-sm">
                 <div className="flex flex-col">
                     <span className="text-[10px] uppercase text-gray-400 font-bold tracking-wider">Market Score</span>
-                    <span className={`text-xl font-black ${currentMarket.completeness >= 80 ? 'text-green-600' : 'text-fmc-medium'}`}>
-                        {currentMarket.completeness}%
+                    <span className={`text-xl font-black ${currentMarket!.completeness >= 80 ? 'text-green-600' : 'text-fmc-medium'}`}>
+                        {currentMarket!.completeness}%
                     </span>
                 </div>
                 <div className="w-px h-8 bg-gray-100"></div>
                 <div className="flex flex-col">
                     <span className="text-[10px] uppercase text-gray-400 font-bold tracking-wider">Action</span>
-                    <span className={`text-sm font-bold ${currentMarket.actionNeeded ? 'text-orange-500' : 'text-green-600'}`}>
-                        {currentMarket.actionNeeded ? 'Required' : 'None'}
+                    <span className={`text-sm font-bold ${currentMarket!.actionNeeded ? 'text-orange-500' : 'text-green-600'}`}>
+                        {currentMarket!.actionNeeded ? 'Required' : 'None'}
                     </span>
                 </div>
             </div>
@@ -242,9 +323,9 @@ const App: React.FC = () => {
                 <PillarRow 
                     key={pillar.id}
                     config={pillar}
-                    market={currentMarket}
+                    market={currentMarket!}
                     products={getProductsByPillar(pillar.id)}
-                    stats={currentMarket.pillarStats[pillar.id]}
+                    stats={currentMarket!.pillarStats[pillar.id]}
                     onClick={() => handlePillarClick(pillar)}
                 />
             ))}
@@ -254,7 +335,7 @@ const App: React.FC = () => {
       {/* --- Detail Overlay --- */}
       {selectedPillar && (
         <PillarDetail 
-            market={currentMarket}
+            market={currentMarket!}
             pillar={selectedPillar}
             onClose={() => setSelectedPillar(null)}
         />
