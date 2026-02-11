@@ -86,8 +86,10 @@ export const ComparisonView: React.FC<ComparisonViewProps> = ({ markets, pillars
             <div className="relative" ref={selectorRef}>
                 <button 
                     onClick={() => setIsSelectorOpen(!isSelectorOpen)}
-                    className={`flex items-center gap-2 px-5 py-2.5 rounded-lg shadow-sm font-medium transition-all
-                        ${isSelectorOpen ? 'bg-fmc-dark text-white' : 'bg-fmc-medium text-white hover:bg-blue-800'}
+                    className={`flex items-center gap-2 px-5 py-2.5 rounded-lg shadow-sm font-medium transition-all border
+                        ${isSelectorOpen 
+                            ? 'bg-white border-fmc-medium text-fmc-medium ring-2 ring-fmc-medium/20' 
+                            : 'bg-fmc-medium border-transparent text-white hover:bg-blue-800'}
                     `}
                 >
                     <Plus size={18} />

@@ -18,6 +18,7 @@ const App: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('landing');
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -159,45 +160,49 @@ const App: React.FC = () => {
                     <input 
                         type="text"
                         placeholder="Search for a country..."
-                        className="w-full p-4 text-lg outline-none text-fmc-dark placeholder:text-gray-300"
+                        className="w-full p-4 text-lg outline-none text-fmc-dark placeholder:text-gray-300 bg-transparent"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
+                        onFocus={() => setIsSearchFocused(true)}
+                        onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)} // Delay for click
                         autoFocus
                     />
                 </div>
 
-                {/* Dropdown Results */}
-                <div className="mt-4 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden max-h-80 overflow-y-auto custom-scrollbar text-left">
-                    {(searchTerm ? filteredMarkets : markets).map(market => (
-                        <button
-                            key={market.id}
-                            onClick={() => handleMarketSelect(market.id)}
-                            className="w-full flex items-center justify-between px-6 py-4 hover:bg-blue-50 transition-colors border-b border-gray-50 last:border-0 group"
-                        >
-                            <div className="flex items-center gap-4">
-                                <img 
-                                    src={`https://flagcdn.com/w40/${market.id}.png`} 
-                                    alt={market.country}
-                                    className="w-8 h-6 object-cover rounded shadow-sm"
-                                />
-                                <span className="font-semibold text-lg text-gray-700 group-hover:text-fmc-medium">
-                                    {market.country}
+                {/* Dropdown Results - Conditional Render */}
+                {(searchTerm || isSearchFocused) && (
+                    <div className="mt-4 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden max-h-80 overflow-y-auto custom-scrollbar text-left animate-in fade-in slide-in-from-top-2 duration-200">
+                        {(searchTerm ? filteredMarkets : markets).map(market => (
+                            <button
+                                key={market.id}
+                                onClick={() => handleMarketSelect(market.id)}
+                                className="w-full flex items-center justify-between px-6 py-4 hover:bg-blue-50 transition-colors border-b border-gray-50 last:border-0 group"
+                            >
+                                <div className="flex items-center gap-4">
+                                    <img 
+                                        src={`https://flagcdn.com/w40/${market.id}.png`} 
+                                        alt={market.country}
+                                        className="w-8 h-6 object-cover rounded shadow-sm"
+                                    />
+                                    <span className="font-semibold text-lg text-gray-700 group-hover:text-fmc-medium">
+                                        {market.country}
+                                    </span>
+                                </div>
+                                <span className={`text-sm font-bold ${market.completeness > 80 ? 'text-green-600' : 'text-gray-400'}`}>
+                                    {market.completeness}%
                                 </span>
-                            </div>
-                            <span className={`text-sm font-bold ${market.completeness > 80 ? 'text-green-600' : 'text-gray-400'}`}>
-                                {market.completeness}%
-                            </span>
-                        </button>
-                    ))}
-                    {filteredMarkets.length === 0 && (
-                        <div className="p-8 text-center text-gray-400 italic">No markets found matching "{searchTerm}"</div>
-                    )}
-                </div>
+                            </button>
+                        ))}
+                        {filteredMarkets.length === 0 && (
+                            <div className="p-8 text-center text-gray-400 italic">No markets found matching "{searchTerm}"</div>
+                        )}
+                    </div>
+                )}
             </div>
          </div>
          
-         <div className="absolute bottom-8 text-center text-xs text-gray-400 uppercase tracking-widest">
-            Fresenius Medical Care &bull; Internal Use Only
+         <div className="absolute bottom-8 text-center text-xs text-gray-400 uppercase tracking-widest px-4 opacity-70">
+            Fresenius Medical Care &bull; Internal Use Only &bull; Placeholder Data Used For Demo Purposes
          </div>
       </div>
     );
