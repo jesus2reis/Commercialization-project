@@ -214,7 +214,7 @@ const App: React.FC = () => {
             <div>
                 <h2 className="text-2xl font-bold text-fmc-dark mb-2">Portfolio Overview</h2>
                 <p className="text-gray-500 max-w-2xl">
-                    Analyze coverage across the 7 strategic pillars. Detailed product availability is shown below. 
+                    Analyze coverage across the 6 strategic pillars. Detailed product availability is shown below. 
                     <span className="hidden md:inline"> Click a row to view full details and notes.</span>
                 </p>
             </div>

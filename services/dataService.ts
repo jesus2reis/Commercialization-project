@@ -4,8 +4,7 @@ import { MarketData, PillarConfig, PillarId, Product, MarketProductStatus } from
 
 export const PILLARS: PillarConfig[] = [
   { id: 'HD', label: 'Hemodialysis (HD)', description: 'Core HD treatment therapies.' },
-  { id: 'HV', label: 'High Volume (HV)', description: 'High volume fluid therapies.' },
-  { id: 'HDF', label: 'Hemodiafiltration (HDF)', description: 'Advanced HDF modalities.' },
+  { id: 'HvHDF', label: 'High Volume HDF (HvHDF)', description: 'High volume and advanced HDF therapies.' },
   { id: 'Personalization', label: 'Personalization', description: 'Patient-specific treatment options.' },
   { id: 'Services', label: 'Services', description: 'Technical and application consultancy.' },
   { id: 'Sustainability', label: 'Sustainability', description: 'Eco-friendly and efficient solutions.' },
@@ -18,9 +17,11 @@ export const PRODUCTS: Product[] = [
   { id: 'hd-2', name: 'Dialyzer Low-Flux', range: 'Essential', importance: 'Must-have', pillarId: 'HD' },
   { id: 'hd-3', name: '5008S CorDiax', range: 'Expert', importance: 'Must-have', pillarId: 'HD' },
   { id: 'hd-4', name: 'FX Classix Dialyzer', range: 'Expert', importance: 'Nice-to-have', pillarId: 'HD' },
-  // HDF
-  { id: 'hdf-1', name: 'Online HDF Kit', range: 'Essential', importance: 'Must-have', pillarId: 'HDF' },
-  { id: 'hdf-2', name: '5008S HDF System', range: 'Expert', importance: 'Must-have', pillarId: 'HDF' },
+  // HvHDF (Merged HV & HDF)
+  { id: 'hdf-1', name: 'Online HDF Kit', range: 'Essential', importance: 'Must-have', pillarId: 'HvHDF' },
+  { id: 'hdf-2', name: '5008S HDF System', range: 'Expert', importance: 'Must-have', pillarId: 'HvHDF' },
+  { id: 'hv-1', name: 'Standard Volume Lines', range: 'Essential', importance: 'Must-have', pillarId: 'HvHDF' },
+  { id: 'hv-2', name: 'High Volume Substituate', range: 'Expert', importance: 'Must-have', pillarId: 'HvHDF' },
   // Digital
   { id: 'dig-1', name: 'Therapy Data Management', range: 'Essential', importance: 'Must-have', pillarId: 'Digital' },
   { id: 'dig-2', name: 'SmartCare Analytics', range: 'Expert', importance: 'Nice-to-have', pillarId: 'Digital' },
@@ -31,9 +32,6 @@ export const PRODUCTS: Product[] = [
   // Sustainability
   { id: 'sus-1', name: 'Eco-Mode Software', range: 'Essential', importance: 'Must-have', pillarId: 'Sustainability' },
   { id: 'sus-2', name: 'Water Saving Kit', range: 'Expert', importance: 'Nice-to-have', pillarId: 'Sustainability' },
-  // HV
-  { id: 'hv-1', name: 'Standard Volume Lines', range: 'Essential', importance: 'Must-have', pillarId: 'HV' },
-  { id: 'hv-2', name: 'High Volume Substituate', range: 'Expert', importance: 'Must-have', pillarId: 'HV' },
   // Personalization
   { id: 'per-1', name: 'Profile Adjustments', range: 'Essential', importance: 'Must-have', pillarId: 'Personalization' },
   { id: 'per-2', name: 'Biofeedback Loops', range: 'Expert', importance: 'Nice-to-have', pillarId: 'Personalization' },

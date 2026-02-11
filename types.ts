@@ -1,7 +1,6 @@
 export type PillarId = 
   | 'HD' 
-  | 'HV' 
-  | 'HDF' 
+  | 'HvHDF' 
   | 'Personalization' 
   | 'Services' 
   | 'Sustainability' 
